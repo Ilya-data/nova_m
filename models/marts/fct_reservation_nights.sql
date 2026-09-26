@@ -19,10 +19,11 @@ enriched as (
         n.room_type_id,
         n.channel_id,
 
-        -- Renamed from nightly_rate: this is total_amount allocated evenly
-        -- across nights, i.e. additive (SUM gives reservation total_amount
-        -- back), not a price/ADR metric that should be averaged. "Rate"
-        -- invites the wrong aggregation in BI tools -- "revenue" doesn't.
+        -- Renamed from nightly_rate: for Confirmed reservations, this is
+        -- total_amount allocated evenly across nights, i.e. additive (SUM
+        -- gives reservation total_amount back). A No_Show emits its retained
+        -- first-night charge only. "Rate" invites the wrong aggregation in
+        -- BI tools -- "revenue" doesn't.
         round(n.nightly_rate, 2)                                            as nightly_revenue,
 
         n.num_guests,

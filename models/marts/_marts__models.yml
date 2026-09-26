@@ -78,12 +78,13 @@ models:
 
   - name: fct_reservation_nights
     description: >
-      Non-cancelled reservations (Confirmed + No_Show) exploded to one row
-      per stay night, enriched beyond int_reservation_nights with
-      arrival/departure flags, a peak-season flag (needs dim_property, so
-      it's computed here), a friendly weekday/weekend label, and lead-time
-      bucketing. Join to dim_property on property_id and dim_date on
-      stay_date = date_day.
+      Confirmed reservations exploded to one row per stay night, plus one
+      check-in-date row for each No_Show reservation representing Nova M's
+      retained first-night charge; later no-show nights are released.
+      Enriched beyond int_reservation_nights with arrival/departure flags, a
+      peak-season flag (needs dim_property, so it's computed here), a friendly
+      weekday/weekend label, and lead-time bucketing. Join to dim_property on
+      property_id and dim_date on stay_date = date_day.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -114,11 +115,13 @@ models:
       - name: nightly_revenue
         description: >
           Renamed from int_reservation_nights.nightly_rate and rounded to 2
-          decimals. This is total_amount allocated evenly across nights --
-          additive (SUM gives the reservation's total_amount back), not a
-          price/ADR metric that should be averaged.
+          decimals. For Confirmed reservations, this is total_amount allocated
+          evenly across nights -- additive (SUM gives the reservation's
+          total_amount back), not a price/ADR metric that should be averaged.
+          A No_Show has one row containing its retained first-night charge.
       - name: num_guests
       - name: num_nights
+        description: "Total originally booked nights. No_Show reservations contribute one fact row despite this booked-night count."
         data_tests:
           - not_null
       - name: lead_time_days

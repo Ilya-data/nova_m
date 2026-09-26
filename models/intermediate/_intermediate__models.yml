@@ -3,10 +3,12 @@ version: 2
 models:
   - name: int_reservation_nights
     description: >
-      Non-cancelled reservations (Confirmed + No_Show) exploded to one row
-      per stay night, enriched with property/room type/channel descriptors.
-      Cancelled reservations are excluded here and handled directly by
-      fct_cancellations from stg_reservations.
+      Confirmed reservations exploded to one row per stay night and enriched
+      with property/room type/channel descriptors. No_Show reservations are
+      retained as one row on check_in_date, representing Nova M's retained
+      first-night charge; later booked nights are released. Cancelled
+      reservations are excluded here and handled directly by fct_cancellations
+      from stg_reservations.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -39,7 +41,7 @@ models:
       - name: num_guests
         description: "Number of guests on the reservation. May be null (known source data quality gap)."
       - name: num_nights
-        description: "Total nights on the reservation (not specific to this stay_date row)."
+        description: "Total originally booked nights on the reservation (not specific to this stay_date row). A No_Show emits only its first night."
         data_tests:
           - not_null
       - name: lead_time_days
@@ -67,7 +69,7 @@ models:
         data_tests:
           - not_null
       - name: reservation_status
-        description: "Status carried through for mart-level filtering. Always Confirmed or No_Show here (Cancelled is filtered out above)."
+        description: "Status carried through for mart-level filtering. Confirmed rows cover every stay night; No_Show has one check-in-date row representing the retained first-night charge. Cancelled is filtered out above."
         data_tests:
           - accepted_values:
               arguments:

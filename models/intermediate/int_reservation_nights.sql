@@ -1,6 +1,8 @@
--- Explodes each non-cancelled reservation into one row per stay night
--- (check_out_date is exclusive, i.e. not itself a stay night), and joins in
--- property/room type/channel descriptors so marts don't need to.
+-- Explodes Confirmed reservations into one row per stay night (check_out_date
+-- is exclusive, i.e. not itself a stay night). No_Show reservations produce
+-- one row on check_in_date only, representing Nova M's retained first-night
+-- charge; later reserved nights are released. The model also joins property,
+-- room type, and channel descriptors so marts don't need to.
 --
 -- Cancelled reservations are excluded entirely here -- they go straight to
 -- fct_cancellations from stg_reservations instead.
@@ -41,8 +43,15 @@ nights as (
 
     from reservations r
     inner join date_spine ds
-        on ds.date_day >= r.check_in_date
-       and ds.date_day <  r.check_out_date
+        on (
+            r.status = 'Confirmed'
+            and ds.date_day >= r.check_in_date
+            and ds.date_day < r.check_out_date
+        )
+        or (
+            r.status = 'No_Show'
+            and ds.date_day = r.check_in_date
+        )
 
 ),
 
