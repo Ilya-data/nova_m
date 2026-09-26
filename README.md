@@ -2,6 +2,14 @@
 
 A dbt project targeting Snowflake.
 
+## Portfolio overview
+
+Nova M Hotels & Residences is a fictional 10-property hotel group. This
+project models room revenue, occupancy, cancellations, and no-shows from
+synthetic Snowflake data for Tableau consumption. See the detailed
+[project overview](docs/project-overview.md) for business rules, model grain,
+metric definitions, and production considerations.
+
 ## Project structure
 
 ```

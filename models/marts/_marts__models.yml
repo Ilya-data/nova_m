@@ -48,7 +48,7 @@ models:
           - not_null
           - unique
       - name: week_start_date
-        description: "Monday of the week containing date_day (DATE_TRUNC('week', ...)). Use this for weekly rollups, not a numbered ISO week."
+        description: "Monday of the ISO week containing date_day, calculated independently of Snowflake's WEEK_START session setting. Use this for weekly rollups."
         data_tests:
           - not_null
       - name: month_date

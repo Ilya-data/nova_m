@@ -44,7 +44,7 @@ cleaned as (
         num_guests,
 
         meal_plan_code                                  as meal_plan,
-        meal_plan_code in ('BB', 'FB', 'AI')             as has_breakfast,
+        meal_plan_code in ('BB', 'HB', 'FB', 'AI')       as has_breakfast,
 
         initcap(trim(cancellation_policy))              as cancellation_policy,
         cancellation_deadline_days,
