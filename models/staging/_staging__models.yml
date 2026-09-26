@@ -243,7 +243,7 @@ models:
               arguments:
                 values: ['BB', 'HB', 'FB', 'AI', 'SC']
       - name: has_breakfast
-        description: "Derived boolean: true when meal_plan is BB, FB, or AI."
+        description: "Derived boolean: true when meal_plan includes breakfast (BB, HB, FB, or AI)."
       - name: cancellation_policy
         description: "Cancellation policy standardized to title case."
       - name: cancellation_deadline_days

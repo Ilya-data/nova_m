@@ -1,7 +1,8 @@
--- nightly_revenue is documented as additive (total_amount allocated evenly
--- across nights), so summing it back up per reservation should reconstruct
--- the reservation's total_amount. This validates that claim directly rather
--- than trusting the comment in fct_reservation_nights.sql.
+-- For Confirmed reservations, nightly_revenue is documented as additive
+-- (total_amount allocated evenly across nights), so summing it back up per
+-- reservation should reconstruct the reservation's total_amount. No_Show
+-- reservations deliberately retain only their first-night charge, so they
+-- are excluded from this full-reservation reconciliation.
 --
 -- Fails (returns a row) for any reservation where the two disagree by more
 -- than a rounding tolerance. nightly_revenue is rounded to 2 decimals per
@@ -28,4 +29,5 @@ select
 
 from {{ ref('stg_reservations') }} r
 inner join by_reservation b using (reservation_id)
-where abs(r.total_amount - b.summed_revenue) > (0.01 * r.nights_stayed)
+where r.status = 'Confirmed'
+  and abs(r.total_amount - b.summed_revenue) > (0.01 * r.nights_stayed)

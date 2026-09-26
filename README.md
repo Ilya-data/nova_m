@@ -2,6 +2,14 @@
 
 A dbt project targeting Snowflake.
 
+## Portfolio overview
+
+Nova M Hotels & Residences is a fictional 10-property hotel group. This
+project models room revenue, occupancy, cancellations, and no-shows from
+synthetic Snowflake data for Tableau consumption. See the detailed
+[project overview](docs/project-overview.md) for business rules, model grain,
+metric definitions, and production considerations.
+
 ## Project structure
 
 ```
@@ -24,7 +32,7 @@ models/
     dim_date.sql                 # conformed calendar dimension
     fct_reservation_nights.sql   # pass-through of int_reservation_nights
     fct_capacity_daily.sql       # int_property_capacity enriched, kept at daily grain
-    mart_cancellation.sql        # cancelled reservations only, reservation grain
+    fct_cancellations.sql        # cancelled reservations only, reservation grain
 ```
 
 - **staging**: 1:1 with a raw source table. Renaming/casting only, no joins or
@@ -41,7 +49,7 @@ raw_maintenance, raw_reservations). The mart layer is designed for Tableau
 to connect to via **Relationships** (not classic data blending), joining
 `fct_reservation_nights` and `fct_capacity_daily` through the conformed
 `dim_property`/`dim_date` dimensions to compute occupancy rate and revenue
-per room. `mart_cancellation` holds only cancelled reservations — computing
+per room. `fct_cancellations` holds only cancelled reservations — computing
 cancellation rate needs a total-reservations count from elsewhere (e.g.
 `fct_reservation_nights`' distinct non-cancelled reservation count).
 

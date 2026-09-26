@@ -20,14 +20,15 @@ maintenance as (
 
 ),
 
--- Bounds are the union of the reservation and maintenance date ranges. See
--- macros/date_spine_bound.sql for why each bound is built through that
--- macro rather than referencing an earlier CTE by name.
+-- Bounds are the union of the reservation and maintenance date ranges. The
+-- UNION ALL makes each bound null-safe when either source is empty. These are
+-- scalar subqueries over real relations because dbt_utils.date_spine cannot
+-- resolve an earlier CTE in its generated SQL.
 date_spine as (
     {{ dbt_utils.date_spine(
         datepart="day",
-        start_date="(select least(" ~ date_spine_bound('min', ref('stg_reservations'), 'check_in_date') ~ ", " ~ date_spine_bound('min', ref('stg_maintenance'), 'start_date') ~ "))",
-        end_date="(select greatest(" ~ date_spine_bound('max', ref('stg_reservations'), 'check_out_date') ~ ", " ~ date_spine_bound('max', ref('stg_maintenance'), 'end_date') ~ "))"
+        start_date="(select min(bound_date) from (select check_in_date as bound_date from " ~ ref('stg_reservations') ~ " where check_in_date is not null union all select start_date as bound_date from " ~ ref('stg_maintenance') ~ " where start_date is not null) as start_bounds)",
+        end_date="(select max(bound_date) from (select check_out_date as bound_date from " ~ ref('stg_reservations') ~ " where check_out_date is not null union all select end_date as bound_date from " ~ ref('stg_maintenance') ~ " where end_date is not null) as end_bounds)"
     ) }}
 ),
 
