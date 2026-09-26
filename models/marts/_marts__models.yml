@@ -238,7 +238,7 @@ models:
         data_tests:
           - not_null
 
-  - name: mart_cancellation
+  - name: fct_cancellations
     description: >
       Cancelled reservations only, at reservation grain, sourced directly
       from stg_reservations (bypasses the intermediate layer). Computing

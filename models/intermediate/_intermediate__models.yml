@@ -6,7 +6,7 @@ models:
       Non-cancelled reservations (Confirmed + No_Show) exploded to one row
       per stay night, enriched with property/room type/channel descriptors.
       Cancelled reservations are excluded here and handled directly by
-      mart_cancellation from stg_reservations.
+      fct_cancellations from stg_reservations.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

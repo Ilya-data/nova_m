@@ -1,5 +1,5 @@
 -- Every reservation goes down exactly one of two paths: cancelled reservations
--- go straight to mart_cancellation from stg_reservations; non-cancelled ones
+-- go straight to fct_cancellations from stg_reservations; non-cancelled ones
 -- go through int_reservation_nights. This checks that split is complete and
 -- non-overlapping -- a reservation should never go missing or get counted
 -- twice across the two paths.
@@ -18,7 +18,7 @@ split as (
 
     select
         (select count(distinct reservation_id) from {{ ref('int_reservation_nights') }})
-        + (select count(*) from {{ ref('mart_cancellation') }})    as reservation_count
+        + (select count(*) from {{ ref('fct_cancellations') }})    as reservation_count
 
 )
 

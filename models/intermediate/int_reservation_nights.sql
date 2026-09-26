@@ -3,7 +3,7 @@
 -- property/room type/channel descriptors so marts don't need to.
 --
 -- Cancelled reservations are excluded entirely here -- they go straight to
--- mart_cancellation from stg_reservations instead.
+-- fct_cancellations from stg_reservations instead.
 
 with reservations as (
 
